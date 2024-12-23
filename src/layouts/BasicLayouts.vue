@@ -5,7 +5,7 @@
         <GlobalHeader />
       </a-layout-header>
       <a-layout-content class="content">
-        <router-view />
+        <!-- <router-view /> -->
       </a-layout-content>
       <a-layout-footer class="footer">
         <a href="https://www.baidu.com" target="_blank">hsq的网站</a>
