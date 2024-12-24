@@ -1,20 +1,25 @@
 <template>
-  <div id="app">
-    <Login />
-  </div>
+  <router-view></router-view>
 </template>
 
-<script setup lang="ts">
-import BasicLayouts from '@/layouts/BasicLayouts.vue'
-import router from './router';
-import Login from './components/Login.vue';
-const openNewPage = ()=>{
-  router.replace('/about')
-}
+<script lang="ts" setup>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+// 页面初始化检查登录状态
+onMounted(() => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+  }
+});
 </script>
 
-<style>
-body {
-  background: linear-gradient(to right, rgb(130, 121, 121),rgb(41, 11, 11));
+<style scoped>
+#app {
+  height: 100%;
+  width: 100%;
 }
 </style>

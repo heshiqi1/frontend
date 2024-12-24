@@ -1,5 +1,6 @@
 <template>
-    <div id="back">
+    <div class="login-container">
+        <div id="back">
         <div class="login">
             <a-row class="row">
                 <a-col :flex="1" class="col01">
@@ -23,19 +24,46 @@
                         <a-form-item name="remember" :wrapper-col="{ offset: 8, span: 16 }">
                             <a-checkbox v-model:checked="formState.remember">Remember me</a-checkbox>
                         </a-form-item>
-    
                         <a-form-item :wrapper-col="{ offset: 8, span: 20 }" >
-                            <a-button type="primary" html-type="submit" class="button" @click="resets">Submit</a-button>
+                            <!-- <a-button type="primary" html-type="submit" class="button" @click="getbaidu()">Submit</a-button> -->
+                            <a-button type="primary" html-type="submit" class="button" @click="login()">login</a-button>
                         </a-form-item>
                     </a-form>
                 </a-col>
             </a-row>
         </div>
     </div>
+    </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
+import {get, post}  from "@/utils/request"
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+
+const getbaidu = async () => {
+  try{
+    const res = await get("/light/baseMolecular?demo=false")
+    console.log("请求成功",res)
+  }catch(error){
+    console.log('请求失败',error)
+  }
+}
+
+const login = async () => {
+  try{
+    const res = await post("/auth0/token",{
+      username: formState.username,
+      password: formState.password
+    })
+    console.log("请求成功",res)
+    router.push('/projects');
+  }catch(error){
+    console.log('请求失败',error)
+  }
+}
 
 interface FormState {
     username: string
@@ -63,7 +91,13 @@ const onFinishFailed = (errorInfo: any) => {
 }
 </script>
 
-<style>
+<style scoped>
+.login-container {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to right, rgb(130, 121, 121),rgb(41, 11, 11));
+}
 .login {
     position: fixed;
     height: 400px;
