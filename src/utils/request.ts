@@ -5,22 +5,14 @@ interface ResponseData<T = any> {
   data: T
 }
 
-const BASE_URL = BASE_URL
+const BASE_URL = process.env.VUE_APP_BASE_URL
 const TIMEOUT = 10000
 
 console.log('当前 baseURL:', BASE_URL);
 
 // 创建 axios 实例
 const service: AxiosInstance = axios.create({
-  baseURL: process.env.VUE_APP_Xtalcase_BASE_URL,
-  timeout: TIMEOUT,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-const loginservice: AxiosInstance = axios.create({
-  baseURL: process.env.VUE_APP_BASE_URL,
+  baseURL: BASE_URL,
   timeout: TIMEOUT,
   headers: {
     'Content-Type': 'application/json'
@@ -41,6 +33,11 @@ service.interceptors.request.use(
       console.warn('未发现 token，重定向至登录页');
       window.location.href = '/login'; // 跳转到登录页
       return Promise.reject(new Error('未发现 token'));
+    }
+
+     // 动态切换 baseURL（如果在请求配置中传入 baseURL）
+    if (config.baseURL) {
+      config.baseURL = config.baseURL;
     }
 
     // 如果有 token 且不在白名单，则加上 Authorization 头
@@ -87,50 +84,64 @@ service.interceptors.response.use(
   }
 )
 
-// 封装请求函数
-const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
-  return service.request<ResponseData<T>>(config).then((res) => {
-    const data: unknown = res; // 将类型先设为 unknown
-    return data as T; // 然后再进行类型强制转换
-  })
-}
+// // 封装请求函数
+// const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
+//   return service.request<ResponseData<T>>(config).then((res) => {
+//     const data: unknown = res; // 将类型先设为 unknown
+//     return data as T; // 然后再进行类型强制转换
+//   })
+// }
 
-// GET 请求
-export const get = <T = any>(url: string, params?: any): Promise<T> => {
-  return request<T>({
+// // GET 请求
+// export const get = <T = any>(url: string, params?: any): Promise<T> => {
+//   return request<T>({
+//     url,
+//     method: 'get',
+//     params
+//   })
+// }
+
+// // POST 请求
+// export const post = <T = any>(url: string, data?: any): Promise<T> => {
+//   return request<T>({
+//     url,
+//     method: 'post',
+//     data
+//   })
+// }
+
+// // PUT 请求
+// export const put = <T = any>(url: string, data?: any): Promise<T> => {
+//   return request<T>({
+//     url,
+//     method: 'put',
+//     data
+//   })
+// }
+
+// // DELETE 请求
+// export const del = <T = any>(url: string, params?: any): Promise<T> => {
+//   return request<T>({
+//     url,
+//     method: 'delete',
+//     params
+//   })
+// }
+
+// 封装请求方法，动态支持多个 baseURL
+export function customRequest<T>(
+  url: string,
+  method: 'get' | 'post' | 'put' | 'delete',
+  data?: object,
+  baseURL?: string
+) {
+  return service({
     url,
-    method: 'get',
-    params
-  })
+    method,
+    data,
+    baseURL,  // 传入自定义 baseURL
+  }) as Promise<T>;
 }
-
-// POST 请求
-export const post = <T = any>(url: string, data?: any): Promise<T> => {
-  return request<T>({
-    url,
-    method: 'post',
-    data
-  })
-}
-
-// PUT 请求
-export const put = <T = any>(url: string, data?: any): Promise<T> => {
-  return request<T>({
-    url,
-    method: 'put',
-    data
-  })
-}
-
-// DELETE 请求
-export const del = <T = any>(url: string, params?: any): Promise<T> => {
-  return request<T>({
-    url,
-    method: 'delete',
-    params
-  })
-}
-
 
 
 export default service
