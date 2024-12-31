@@ -40,16 +40,18 @@
 import { reactive, ref } from 'vue'
 import { customRequest } from '@/utils/request'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 
 const router = useRouter()
 
 const project = async () => {
   try {
     const res = await customRequest('/api/groups/?id__in=1,2&limit=100&offset=0', 'get')
-    console.log('请求成功', res)
+    console.log('请求成功login', res)
     router.push('/projects')
-  } catch (error) {
-    console.log('请求失败', error)
+  } catch (error: any) {
+    console.log('请求失败login', error)
+    message.error(`请求失败:${error}`)
   }
 }
 
@@ -64,10 +66,12 @@ const login = async () => {
       },
       'https://cspdemo.xtalpi.xyz'
     )
-    console.log('请求成功', res)
+    console.log('请求成功login', res)
     router.push('/projects')
-  } catch (error) {
-    console.log('请求失败', error)
+  } catch (error: any) {
+    setTimeout(() => {
+      message.error('请求失败', error)
+    }, 1000)
   }
 }
 
@@ -93,7 +97,7 @@ const onFinish = (values: any) => {
 }
 
 const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo)
+  message.error('Failed:', errorInfo)
 }
 </script>
 

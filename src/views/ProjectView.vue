@@ -18,6 +18,7 @@ import { customRequest } from '@/utils/request'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
+import { message } from 'ant-design-vue'
 
 const router = useRouter()
 const columns: TableColumnsType = [
@@ -43,15 +44,16 @@ const data = ref<DataItem[]>([])
 const refresh = async () => {
   try {
     const res: any = await customRequest('/api/projects/?limit=50&conventional=true', 'get')
-    console.log('请求成功', res)
+    console.log('请求成功project', res)
     for (const item of res.results) {
       data.value.push({ projectname: item.name, customername: item.customer, PM: item.pm, serviceType: item.service_type, CreateTime: item.created_time, DueTime: item.due_date })
     }
-    console.log('请求成功1', data.value)
     data.value = Array.from(new Map(data.value.map(item => [item.projectname, item])).values())
-    console.log('请求成功2', data.value)
-  } catch (error) {
-    console.log('请求失败', error)
+  } catch (error: any) {
+    setTimeout(() => {
+      console.log('请求失败project', error)
+      message.error('请求失败project', error)
+    }, 1000)
   }
 }
 

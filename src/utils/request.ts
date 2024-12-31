@@ -31,7 +31,10 @@ service.interceptors.request.use(
 
     if (!isWhiteListed && !token) {
       console.warn('未发现 token，重定向至登录页');
-      window.location.href = '/login'; // 跳转到登录页
+      setTimeout(() => {
+        window.location.href = '/login' // 跳转到登录页
+        localStorage.removeItem('token')
+      }, 2000)   // 延迟 1 秒，等待页面跳转完成
       return Promise.reject(new Error('未发现 token'));
     }
 
@@ -66,8 +69,9 @@ service.interceptors.response.use(
         console.log('Token 已保存:', token);
       }
     }
+    console.log(response.status)
+    console.log(res)
     if (response.status !== 200) {
-      console.error('响应错误:', res.message)
       return Promise.reject(new Error(res.message || 'Error'))
     }
     return res
@@ -75,11 +79,15 @@ service.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       console.warn('Token 过期，重定向至登录页')
-      localStorage.removeItem('token')
-      window.location.href = '/login' // 跳转到登录页
+      setTimeout(() => {
+        window.location.href = '/login' // 跳转到登录页
+        localStorage.removeItem('token')
+      }, 2000)   // 延迟 1 秒，等待页面跳转完成
+      return Promise.reject(new Error('Token 过期'))
     } else {
       console.error('网络错误:', error)
     }
+    console.log(error)
     return Promise.reject(error)
   }
 )
